@@ -1,0 +1,123 @@
+name: StickerChart
+options:
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+  knownRegions: [en, zh-Hans, zh-Hant]
+settings:
+  base:
+    APP_ID: com.hgsldswk.stickerchart
+    APP_STORE_ID: ""
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.0"
+    CODE_SIGN_STYLE: Automatic
+targets:
+  StickerChart:
+    type: application
+    platform: iOS
+    sources: [StickerChart, Shared]
+    dependencies:
+      - target: StickerChartWidget
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID)
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: StickerChart AppStore
+    entitlements:
+      path: StickerChart/StickerChart.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.hgsldswk.stickerchart]
+        keychain-access-groups: [$(AppIdentifierPrefix)com.hgsldswk.stickerchart.trial-anchor]
+    info:
+      path: StickerChart/Info.plist
+      properties:
+        CFBundleDisplayName: Sticker Chart
+        CFBundleDevelopmentRegion: en
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen:
+          UIColorName: Paper
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        ITSAppUsesNonExemptEncryption: false
+        APP_STORE_ID: $(APP_STORE_ID)
+        TrialKeychainAccessGroup: $(AppIdentifierPrefix)com.hgsldswk.stickerchart.trial-anchor
+        CFBundleURLTypes:
+          - CFBundleURLName: com.hgsldswk.stickerchart.open
+            CFBundleURLSchemes: [stickerchart]
+  StickerChartWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - StickerChartWidget
+      - path: Shared
+        excludes: [Transfer.swift]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).widget
+        TARGETED_DEVICE_FAMILY: "1"
+        SKIP_INSTALL: YES
+        APPLICATION_EXTENSION_API_ONLY: YES
+      configs:
+        Release:
+          CODE_SIGN_STYLE: Manual
+          CODE_SIGN_IDENTITY: Apple Distribution
+          PROVISIONING_PROFILE_SPECIFIER: StickerChart Widget AppStore
+    entitlements:
+      path: StickerChartWidget/StickerChartWidget.entitlements
+      properties:
+        com.apple.security.application-groups: [group.com.hgsldswk.stickerchart]
+    info:
+      path: StickerChartWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Sticker Chart
+        CFBundleDevelopmentRegion: en
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  StickerChartTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - StickerChartTests
+      - path: Shared
+        excludes: [Design.swift, StickIntent.swift, PrivacyInfo.xcprivacy]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).tests
+        GENERATE_INFOPLIST_FILE: YES
+  StickerChartUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [StickerChartUITests]
+    dependencies:
+      - target: StickerChart
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_ID).uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: StickerChart
+schemes:
+  StickerChart:
+    build:
+      targets:
+        StickerChart: all
+        StickerChartTests: [test]
+    test:
+      config: Debug
+      targets: [StickerChartTests]
+  StickerChartUI:
+    build:
+      targets:
+        StickerChart: all
+        StickerChartUITests: [test]
+    test:
+      config: Debug
+      targets: [StickerChartUITests]
